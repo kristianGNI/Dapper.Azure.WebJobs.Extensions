@@ -13,7 +13,7 @@ namespace Samples
 {
     public static class InsertCustomerSample1
     {
-         [FunctionName("InsertCustomerSample")]
+         [FunctionName("InsertCustomerSample1")]
          [return: Dapper(Sql = "insert.sql", SqlConnection = "SqlConnection")]
          public static Customer Run([HttpTrigger] Customer customer, ILogger log)
          {
