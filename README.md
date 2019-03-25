@@ -4,7 +4,7 @@ sql input/output binding for azure functions
 ## Using the binding
 
 ### C#
-Output binding samples
+#### Output binding samples
 
 ```csharp 
  [FunctionName("InsertCustomerSample")]
@@ -24,7 +24,7 @@ Output binding samples
       return customer;
   }
   ```
-Input binding samples
+#### Input binding samples
 
 ```csharp 
   [FunctionName("SelectCustomerSample")]
