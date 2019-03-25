@@ -24,6 +24,18 @@ sql input/output binding for azure functions
       return customer;
   }
   ```
+  
+```csharp
+  [FunctionName("InsertCustomerSample3")]
+  public static  IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
+                                     [Dapper(Sql = "insert.sql", SqlConnection = "SqlConnection")] out IList<Customer> customers,
+                                     ILogger log)
+  {
+      customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
+      return customers;
+  }
+```
+
 #### Input binding samples
 
 ```csharp 
