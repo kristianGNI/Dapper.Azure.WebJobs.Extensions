@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.WebJobs.Description;
+﻿using Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings;
+using Microsoft.Azure.WebJobs.Description;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Config;
 using Newtonsoft.Json;
@@ -7,10 +8,10 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Dynamic;
 
-namespace Dapper.Azure.WebJobs.Extensions.SqlServer
+namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Config
 {
-    [Extension("DapperExtensions")]
-    public class DapperExtensions : IExtensionConfigProvider
+    [Extension("Dapper")]
+    public class DapperExtensionConfigProvider : IExtensionConfigProvider
     {
         public void Initialize(ExtensionConfigContext context)
         {
@@ -21,11 +22,11 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
                 return ConvertFromJArray(input);                
             });
 
-            context.AddOpenConverter<OpenType, SqlInput>(typeof(OpenTypeConverter<>));
+            context.AddOpenConverter<OpenType, SqlInput>(typeof(OpenTypeToSqlInputConverter<>));
 
             var rule = context.AddBindingRule<DapperAttribute>();
-            rule.BindToCollector<SqlInput>(attr => new DapperAsyncCollector(attr));
-            rule.BindToInput<OpenType>(typeof(DapperAsyncConverter<>));
+            rule.BindToCollector<SqlInput>(attr => new ExecuteSqlAsyncCollector(attr));
+            rule.BindToInput<OpenType>(typeof(DapperAttributeToExecuteQueryAsyncConverter<>));
         }
         public SqlInput ConvertFromJArray(JArray arrary)
         {

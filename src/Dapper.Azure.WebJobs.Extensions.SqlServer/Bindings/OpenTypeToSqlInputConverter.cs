@@ -1,8 +1,8 @@
 ﻿using Microsoft.Azure.WebJobs;
 
-namespace Dapper.Azure.WebJobs.Extensions.SqlServer
+namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
 {
-    internal class OpenTypeConverter<T> : IConverter<T, SqlInput>
+    internal class OpenTypeToSqlInputConverter<T> : IConverter<T, SqlInput>
     {
         public SqlInput Convert(T input)
         {
