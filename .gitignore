@@ -314,3 +314,9 @@ OpenCover/
 
 # Azure Stream Analytics local run output 
 ASALocalRun/
+
+sample/CustomerSample/local\.settings\.json
+
+Dapper sql server binding for Azure functions\.code-workspace
+
+sample/CustomerSample/\.vscode/
