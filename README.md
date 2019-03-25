@@ -1,4 +1,4 @@
-# Dapper sql binding for Azure functions
+# Dapper sql server binding for Azure functions
 sql input/output binding for azure functions
 
 ## Using the binding
