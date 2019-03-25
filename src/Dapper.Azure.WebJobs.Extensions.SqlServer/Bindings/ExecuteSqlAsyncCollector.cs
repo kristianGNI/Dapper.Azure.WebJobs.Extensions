@@ -1,13 +1,14 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper;
+using Microsoft.Azure.WebJobs;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dapper.Azure.WebJobs.Extensions.SqlServer
+namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
 {
-    internal class DapperAsyncCollector : IAsyncCollector<SqlInput>
+    internal class ExecuteSqlAsyncCollector : IAsyncCollector<SqlInput>
     {
         private DapperAttribute _dapperAttribute;
-        public DapperAsyncCollector(DapperAttribute attribute)
+        public ExecuteSqlAsyncCollector(DapperAttribute attribute)
         {
             _dapperAttribute = attribute ?? throw new System.ArgumentNullException(nameof(attribute));
         }
