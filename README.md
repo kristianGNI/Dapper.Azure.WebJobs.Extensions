@@ -49,3 +49,13 @@ sql input/output binding for azure functions
   }
   ```
   
+  ```csharp 
+  [FunctionName("SelectCustomerSample3")]
+  public static async Task<IList<Customer>> Run([HttpTrigger] HttpRequestMessage req,
+                                                [Dapper(Sql = "SELECT * FROM [dbo].[Customers]",
+                                                        SqlConnection = "SqlConnection")] IList<Customer> customers,
+                                                ILogger log)
+   {
+      return customers;
+   }
+```
