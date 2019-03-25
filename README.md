@@ -6,40 +6,46 @@ sql input/output binding for azure functions
 ### C#
 Output binding samples
 
-```csharp [FunctionName("InsertCustomerSample")]
-  [return: Dapper(Sql = "insert.sql", SqlConnection = "SqlConnection")]
-  public static async Task<Customer> Run([HttpTrigger] Customer customer, ILogger log)
-  {
-    return customer
-  }
+```csharp 
+ [FunctionName("InsertCustomerSample")]
+ [return: Dapper(Sql = "insert.sql", SqlConnection = "SqlConnection")]
+ public static Customer Run([HttpTrigger] Customer customer, ILogger log)
+ {
+    return customer;
+ }
   ```
 
-```csharp [FunctionName("InsertCustomerSample2")]
-  [return: Dapper(Sql = "INSERT INTO [Customers] ([FirstName], [LastName]) VALUES (@FirstName, @LastName)", 
+```csharp 
+  [FunctionName("InsertCustomerSample2")]
+  [return: Dapper(Sql = "INSERT INTO [Customers] ([FirstName], [LastName]) VALUES (@FirstName, @LastName)",
                   SqlConnection = "SqlConnection")]
-  public static async Task<Customer> Run([HttpTrigger] Customer customer, ILogger log)
+  public static Customer Run([HttpTrigger] Customer customer, ILogger log)
   {
-    return customer
+      return customer;
   }
   ```
 Input binding samples
 
-```csharp [FunctionName("SelectCustomerSample")]
-  public static async Task<Customer> Run([HttpTrigger] HttpRequestMessage req,
-  [Dapper(Sql = "select.sql", SqlConnection = "SqlConnection", parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers, 
-  Logger log)
+```csharp 
+  [FunctionName("SelectCustomerSample")]
+  public static async IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
+                                          [Dapper(Sql = "select.sql", SqlConnection = "SqlConnection", 
+                                                  parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
+                                          ILogger log)
   {
-    return customer
+      return customers;
   }
   ```
   
-  ```csharp [FunctionName("SelectCustomerSample2")]
+  ```csharp 
+  [FunctionName("SelectCustomerSample2")]
   public static async Task<IList<Customer>> Run([HttpTrigger] HttpRequestMessage req,
-  [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE FirstName = @FirstName", 
-  SqlConnection = "SqlConnection", parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers, 
-  Logger log)
+                                                [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE FirstName = @FirstName",
+                                                        SqlConnection = "SqlConnection", 
+                                                        parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
+                                                ILogger log)
   {
-    return customer
+      return customers;
   }
   ```
   
