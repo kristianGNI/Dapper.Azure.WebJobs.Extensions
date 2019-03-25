@@ -40,7 +40,7 @@ sql input/output binding for azure functions
 
 ```csharp 
   [FunctionName("SelectCustomerSample")]
-  public static async IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
+  public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
                                           [Dapper(Sql = "select.sql", SqlConnection = "SqlConnection", 
                                                   parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
                                           ILogger log)
@@ -51,7 +51,7 @@ sql input/output binding for azure functions
   
   ```csharp 
   [FunctionName("SelectCustomerSample2")]
-  public static async Task<IList<Customer>> Run([HttpTrigger] HttpRequestMessage req,
+  public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
                                                 [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE FirstName = @FirstName",
                                                         SqlConnection = "SqlConnection", 
                                                         parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
@@ -63,7 +63,7 @@ sql input/output binding for azure functions
   
   ```csharp 
   [FunctionName("SelectCustomerSample3")]
-  public static async Task<IList<Customer>> Run([HttpTrigger] HttpRequestMessage req,
+  public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
                                                 [Dapper(Sql = "SELECT * FROM [dbo].[Customers]",
                                                         SqlConnection = "SqlConnection")] IList<Customer> customers,
                                                 ILogger log)
