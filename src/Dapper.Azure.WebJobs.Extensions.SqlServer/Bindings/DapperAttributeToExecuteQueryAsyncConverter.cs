@@ -1,10 +1,11 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper;
+using Microsoft.Azure.WebJobs;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dapper.Azure.WebJobs.Extensions.SqlServer
+namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
 {
-    internal class DapperAsyncConverter<T> : IAsyncConverter<DapperAttribute, T>
+    internal class DapperAttributeToExecuteQueryAsyncConverter<T> : IAsyncConverter<DapperAttribute, T>
     {
         public async Task<T> ConvertAsync(DapperAttribute attr, CancellationToken cancellationToken)
         {

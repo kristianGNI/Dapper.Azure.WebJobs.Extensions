@@ -9,7 +9,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dapper.Azure.WebJobs.Extensions.SqlServer
+namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
 {
     internal class GenericSqlStore
     {
