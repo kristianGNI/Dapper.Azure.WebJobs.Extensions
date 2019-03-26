@@ -1,0 +1,1 @@
+﻿INSERT INTO [Customers] ([FirstName], [LastName]) VALUES (@FirstName, @LastName)
