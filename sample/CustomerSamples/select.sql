@@ -1,0 +1,1 @@
+﻿SELECT CustomerNumber, FirstName, LastName FROM [Customers] WHERE FirstName = @FirstName
