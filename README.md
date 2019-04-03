@@ -3,6 +3,20 @@ sql input/output binding for azure functions
 
 ## Using the binding
 
+```csharp
+[assembly: WebJobsStartup(typeof(CustomerSamples.Startup))]
+namespace CustomerSamples
+{
+    public class Startup : IWebJobsStartup
+    {
+        public void Configure(IWebJobsBuilder builder)
+        {
+            builder.AddDapperSqlServer();
+        }
+    }
+}
+```
+
 ### C#
 #### Output binding samples
 
