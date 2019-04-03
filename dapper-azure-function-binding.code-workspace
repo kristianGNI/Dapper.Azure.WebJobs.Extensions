@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "src\\Dapper.Azure.WebJobs.Extensions.SqlServer"
+		},
+		{
+			"path": "sample\\CustomerSamples"
+		}
+	]
+}
