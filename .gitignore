@@ -263,10 +263,3 @@ paket-files/
 __pycache__/
 *.pyc
 
-sample/CustomerSample/\.vscode/
-
-dapper-azure-function-binding\.code-workspace
-
-sample/CustomerSamples/\.vscode/
-
-dapper-azure-function-binding\.sln

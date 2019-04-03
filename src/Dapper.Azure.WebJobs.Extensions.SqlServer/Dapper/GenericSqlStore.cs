@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -27,22 +28,28 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync().ConfigureAwait(false);
-
                 using (var transaction = connection.BeginTransaction())
                 {
-                    if (!isParameterizeSql)
-                        await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
-                    else if (!IsMultiExecution(input.Parameters))
-                        await connection.ExecuteAsync(sql, input.Parameters as object, transaction: transaction).ConfigureAwait(false);
-                    else
-                    {
-                        var parameters = input.Parameters as IEnumerable;
-                        foreach (var parameter in parameters)
+                    try { 
+                        if (!isParameterizeSql)
+                            await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
+                        else if (!IsMultiExecution(input.Parameters))
+                            await connection.ExecuteAsync(sql, input.Parameters as object, transaction: transaction).ConfigureAwait(false);
+                        else
                         {
-                            await connection.ExecuteAsync(sql, parameter, transaction: transaction).ConfigureAwait(false);
+                            var parameters = input.Parameters as IEnumerable;
+                            foreach (var parameter in parameters)
+                            {
+                                await connection.ExecuteAsync(sql, parameter, transaction: transaction).ConfigureAwait(false);
+                            }
                         }
+                        transaction.Commit();
                     }
-                    transaction.Commit();
+                    catch(Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw ex;
+                    }
                 }
             }
         }
