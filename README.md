@@ -2,6 +2,7 @@
 sql input/output binding for azure functions
 
 ## Using the binding
+### C#
 
 ```csharp
 [assembly: WebJobsStartup(typeof(CustomerSamples.Startup))]
@@ -17,7 +18,7 @@ namespace CustomerSamples
 }
 ```
 
-### C#
+
 #### Output binding samples
 
 ```csharp 
