@@ -30,7 +30,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 await connection.OpenAsync().ConfigureAwait(false);
                 using (var transaction = connection.BeginTransaction())
                 {
-                    try { 
+                    try
+                    {
                         if (!isParameterizeSql)
                             await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
                         else if (!IsMultiExecution(input.Parameters))
@@ -45,7 +46,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                         }
                         transaction.Commit();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
                         throw ex;
@@ -68,11 +69,22 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             using (var connection = new SqlConnection(connectionString))
             {
                 IEnumerable<dynamic> result;
-                await connection.OpenAsync().ConfigureAwait(false);                
-                if (isParameterizeSql)
-                    result = await connection.QueryAsync(sql, GetParameters(parameters, sql));
-                else
-                    result = await connection.QueryAsync(sql);
+                await connection.OpenAsync().ConfigureAwait(false);
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        if (isParameterizeSql)
+                            result = await connection.QueryAsync(sql, GetParameters(parameters, sql), transaction: transaction);
+                        else
+                            result = await connection.QueryAsync(sql, transaction: transaction);
+                        transaction.Commit();
+                    }
+                    catch(Exception ex){
+                        transaction.Rollback();
+                        throw ex;
+                    }
+                }
                 return HandleQueryResult<T>(result);
             }
         }
@@ -81,7 +93,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
 
-            object parameters = null;            
+            object parameters = null;
             if (Utility.IsJson(strParameters))
             {
                 parameters = JsonConvert.DeserializeObject<ExpandoObject>(strParameters, new ExpandoObjectConverter());
@@ -95,7 +107,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     ((DynamicParameters)parameters).Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)], null, ParameterDirection.Input);
                 }
-            }            
+            }
             return parameters;
         }
         private static bool IsParameterizeSql(string sql)
@@ -111,7 +123,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
         private static T HandleQueryResult<T>(IEnumerable<dynamic> result)
         {
             T resultValue = default(T);
-            if (result != null && result.Count() > 0) {
+            if (result != null && result.Count() > 0)
+            {
                 var resultType = typeof(T);
                 string json;
 
@@ -120,7 +133,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 else
                     json = JsonConvert.SerializeObject(result.FirstOrDefault());
                 resultValue = JsonConvert.DeserializeObject<T>(json);
-            }            
+            }
             return resultValue;
         }
     }

@@ -37,7 +37,7 @@
       "options": {
         "cwd": "${workspaceFolder}/bin/Debug/netcoreapp2.1"
       },
-      "command": "host start",
+      "command": "func start",
       "isBackground": true,
       "problemMatcher": "$func-watch"
     }
