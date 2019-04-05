@@ -35,9 +35,9 @@
       "type": "func",
       "dependsOn": "build",
       "options": {
-        "cwd": "${workspaceFolder}/bin/Debug/netcoreapp2.1"
+        "cwd": "${workspaceFolder}/bin/Debug/netcoreapp2.2"
       },
-      "command": "func start",
+      "command": "host start",
       "isBackground": true,
       "problemMatcher": "$func-watch"
     }
