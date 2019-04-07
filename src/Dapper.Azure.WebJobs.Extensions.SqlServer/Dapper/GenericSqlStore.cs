@@ -33,7 +33,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     try
                     {
                         if (isParameterizeSql)
-                            await connection.ExecuteAsync(sql, GetDynParameters(input.Parameters) as object, transaction: transaction).ConfigureAwait(false);                            
+                            await connection.ExecuteAsync(sql, GetParameters(input.Parameters) as object, transaction: transaction).ConfigureAwait(false);                            
                         else 
                             await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
                         transaction.Commit();
@@ -80,9 +80,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 return HandleQueryResult<T>(result);
             }
         }
-        private static Array GetDynParameters(dynamic dynParameters){
+        private static object GetParameters(dynamic dynParameters){
             if (Utility.IsEnumerable(dynParameters))
-                return ((IEnumerable)dynParameters).Cast<Object>().ToArray();            
+                return ((IEnumerable)dynParameters).Cast<object>().ToArray();            
             else
                 return new[] { dynParameters };
         }
