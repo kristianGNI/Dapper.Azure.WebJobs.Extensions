@@ -6,7 +6,7 @@
     <Title>SQL binding for azure functions</Title>
     <Authors>Kristian Gundry Nielsen</Authors>
     <PackageDescription>SQL binding for azure functions using Dapper</PackageDescription>
-    <PackageTags>azure-function;sql;dapper</PackageTags>
+    <PackageTags>azure-function sql dapper azure</PackageTags>
     <Copyright>Copyright (c) 2019 Kristian Gundry Nielsen</Copyright>
     <RepositoryUrl>https://github.com/kristianGNI/dapper-azure-function-binding</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>    
