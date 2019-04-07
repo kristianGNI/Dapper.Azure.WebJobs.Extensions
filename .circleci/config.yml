@@ -1,41 +1,52 @@
 version: 2
+
+# Settings common to each job
+anchor_1: &job_defaults
+  working_directory: ~/build
+  docker:
+    - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+
 jobs:
   build:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    <<: *job_defaults
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/build
       - run: dotnet clean
       - run: dotnet restore
       - run: dotnet build --configuration Release
 
   test:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    <<: *job_defaults
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/build
       - run:
           name: test
           command: dotnet test
 
   pack:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    <<: *job_defaults
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/build
       - run:
           name: pack
           command: dotnet pack -p:PackageVersion={CIRCLE_TAG}-beta -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
       - persist_to_workspace:
           root: .
-          paths: 
-              - ./dist
+          paths:
+            - ./dist
 
   publish:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    <<: *job_defaults
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/build
       - run:
           name: push
           command: dotnet nuget push  -k ${PUBLISH_KEY} -s https://api.nuget.org/v3/index.json  ./dist/Dapper.Azure.WebJobs.Extensions.SqlServer.{CIRCLE_TAG}-beta.nupkg
@@ -48,19 +59,18 @@ workflows:
       - test
       - pack:
           requires:
-                - build
-                - test
+            - build
+            - test
           filters:
             branches:
-                ignore: /.*/
+              ignore: /.*/
             tags:
-                only: /^\d+\.\d+\.\d+$/
+              only: /^\d+\.\d+\.\d+$/
       - publish:
           requires:
-                - pack
+            - pack
           filters:
-              branches:
-                ignore: /.*/
-              tags:
-                only: /^\d+\.\d+\.\d+$/
-
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
