@@ -81,6 +81,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             }
         }
         private static object GetParameters(dynamic dynParameters){
+            if(dynParameters == null) throw new System.ArgumentNullException(nameof(dynParameters));
+            
             if (Utility.IsEnumerable(dynParameters))
                 return ((IEnumerable)dynParameters).Cast<object>().ToArray();            
             else
