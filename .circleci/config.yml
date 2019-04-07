@@ -1,0 +1,82 @@
+version: 2
+
+# Settings common to each job
+anchor_1: &job_defaults
+  working_directory: ~/build
+  docker:
+    - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+
+jobs:
+  build:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/build
+      - run: dotnet clean
+      - run: dotnet restore
+      - run: dotnet build --configuration Release
+
+  test:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/build
+      - run:
+          name: test
+          command: dotnet test
+
+  pack:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/build
+      - run:
+          name: pack
+          command: dotnet pack -p:PackageVersion=${CIRCLE_TAG}-beta -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./dist
+
+  publish:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/build
+      - run:
+          name: push
+          command: dotnet nuget push  -k ${PUBLISH_KEY} -s https://api.nuget.org/v3/index.json  ./dist/Dapper.Azure.WebJobs.Extensions.SqlServer.${CIRCLE_TAG}-beta.nupkg
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - test:
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - pack:
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - publish:
+          requires:
+            - pack
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
