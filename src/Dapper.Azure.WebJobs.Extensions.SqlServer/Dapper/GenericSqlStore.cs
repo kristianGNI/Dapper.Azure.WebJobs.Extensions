@@ -34,16 +34,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     {
                         if (!isParameterizeSql)
                             await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
-                        else if (!IsMultiExecution(input.Parameters))
-                            await connection.ExecuteAsync(sql, input.Parameters as object, transaction: transaction).ConfigureAwait(false);
-                        else
-                        {
-                            var parameters = input.Parameters as IEnumerable;
-                            foreach (var parameter in parameters)
-                            {
-                                await connection.ExecuteAsync(sql, parameter, transaction: transaction).ConfigureAwait(false);
-                            }
-                        }
+                        else 
+                            await connection.ExecuteAsync(sql, GetDynParameters(input.Parameters) as object, transaction: transaction).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch (Exception ex)
@@ -88,6 +80,12 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 return HandleQueryResult<T>(result);
             }
         }
+        private static Array GetDynParameters(dynamic dynParameters){
+            if (Utility.IsEnumerable(dynParameters))
+                return ((IEnumerable)dynParameters).Cast<Object>().ToArray();            
+            else
+                return new[] { dynParameters };
+        }
         private static object GetParameters(string strParameters, string sql)
         {
             if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
@@ -116,10 +114,6 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             var sqlParameters = Utility.GetWords(sql);
             return sqlParameters.Count() > 0;
         }
-        private static bool IsMultiExecution(dynamic input)
-        {
-            return input is IEnumerable;
-        }
         private static T HandleQueryResult<T>(IEnumerable<dynamic> result)
         {
             T resultValue = default(T);
@@ -128,7 +122,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 var resultType = typeof(T);
                 string json;
 
-                if (Utility.IsEnumerableType(resultType))
+                if (Utility.IsEnumerable(resultType))
                     json = JsonConvert.SerializeObject(result);
                 else
                     json = JsonConvert.SerializeObject(result.FirstOrDefault());
