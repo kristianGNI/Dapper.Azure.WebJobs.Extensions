@@ -32,10 +32,10 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     try
                     {
-                        if (!isParameterizeSql)
-                            await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
+                        if (isParameterizeSql)
+                            await connection.ExecuteAsync(sql, GetDynParameters(input.Parameters) as object, transaction: transaction).ConfigureAwait(false);                            
                         else 
-                            await connection.ExecuteAsync(sql, GetDynParameters(input.Parameters) as object, transaction: transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch (Exception ex)
@@ -67,9 +67,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     try
                     {
                         if (isParameterizeSql)
-                            result = await connection.QueryAsync(sql, GetParameters(parameters, sql), transaction: transaction);
+                            result = await connection.QueryAsync(sql, GetParameters(parameters, sql), transaction: transaction).ConfigureAwait(false);
                         else
-                            result = await connection.QueryAsync(sql, transaction: transaction);
+                            result = await connection.QueryAsync(sql, transaction: transaction).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch(Exception ex){
