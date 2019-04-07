@@ -35,7 +35,7 @@ jobs:
           at: ~/build
       - run:
           name: pack
-          command: dotnet pack -p:PackageVersion={CIRCLE_TAG}-beta -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
+          command: dotnet pack -p:PackageVersion=${CIRCLE_TAG}-beta -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
       - persist_to_workspace:
           root: .
           paths:
@@ -49,14 +49,20 @@ jobs:
           at: ~/build
       - run:
           name: push
-          command: dotnet nuget push  -k ${PUBLISH_KEY} -s https://api.nuget.org/v3/index.json  ./dist/Dapper.Azure.WebJobs.Extensions.SqlServer.{CIRCLE_TAG}-beta.nupkg
+          command: dotnet nuget push  -k ${PUBLISH_KEY} -s https://api.nuget.org/v3/index.json  ./dist/Dapper.Azure.WebJobs.Extensions.SqlServer.${CIRCLE_TAG}-beta.nupkg
 
 workflows:
   version: 2
   main:
     jobs:
-      - build
-      - test
+      - build:
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+      - test:
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
       - pack:
           requires:
             - build
