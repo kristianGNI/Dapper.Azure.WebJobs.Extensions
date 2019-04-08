@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "sample\\CustomerSamples"
+		},
+		{
+			"path": ".circleci"
 		}
 	]
 }
