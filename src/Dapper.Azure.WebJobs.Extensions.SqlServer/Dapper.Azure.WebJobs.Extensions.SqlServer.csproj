@@ -5,7 +5,7 @@
     <PackageId>Dapper.Azure.WebJobs.Extensions.SqlServer</PackageId>
     <Title>SQL binding for azure functions</Title>
     <Authors>Kristian Gundry Nielsen</Authors>
-    <PackageDescription>SQL binding for azure functions using Dapper</PackageDescription>
+    <PackageDescription>SQL binding for azure functions using Dapper, currently only working with MS SQL Server</PackageDescription>
     <PackageTags>azure-function sql dapper azure</PackageTags>
     <Copyright>Copyright (c) 2019 Kristian Gundry Nielsen</Copyright>
     <RepositoryUrl>https://github.com/kristianGNI/dapper-azure-function-binding</RepositoryUrl>
