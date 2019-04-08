@@ -62,9 +62,13 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
                     .Where(part => part.Length == 2)
                     .ToDictionary(sp => sp[0], sp => sp[1]);
         }
-        public static bool IsEnumerableType(Type type)
+        public static bool IsEnumerable(Type type)
         {
             return (type.GetInterface(nameof(IEnumerable)) != null);
+        }
+        public static bool IsEnumerable(dynamic type)
+        {
+            return type is IEnumerable;
         }
     }
 }
