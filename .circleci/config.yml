@@ -35,7 +35,8 @@ jobs:
           at: ~/build
       - run:
           name: pack
-          command: dotnet pack -p:PackageVersion=${CIRCLE_TAG} -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
+          #command: dotnet pack -p:PackageVersion=${CIRCLE_TAG} -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
+          command: dotnet pack -p:PackageVersion=0.0.0-beta -p:TargetFrameworks=netcoreapp2.2 --configuration Release -o ../../dist
       - store_artifacts:
           path: ../../dist/Dapper.Azure.WebJobs.Extensions.SqlServer.${CIRCLE_TAG}.nupkg
           destination: Dapper.Azure.WebJobs.Extensions.SqlServer.${CIRCLE_TAG}.nupkg
