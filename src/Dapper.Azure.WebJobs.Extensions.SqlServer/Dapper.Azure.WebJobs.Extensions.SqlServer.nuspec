@@ -21,6 +21,6 @@
         </dependencies>         
     </metadata>
     <files>
-      <file src="..\src\Dapper.Azure.WebJobs.Extensions.SqlServer\bin\$configuration$\netcoreapp2.2\*.dll" target="lib\netcoreapp2.2\"/>
+      <file src="Dapper.Azure.WebJobs.Extensions.SqlServer\bin\$configuration$\netcoreapp2.2\*.dll" target="lib\netcoreapp2.2\"/>
     </files>
 </package>
