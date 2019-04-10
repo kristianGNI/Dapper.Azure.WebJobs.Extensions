@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <NuspecFile>..\..\nuget\Dapper.Azure.WebJobs.Extensions.SqlServer.nuspec</NuspecFile>
+    <NuspecFile>Dapper.Azure.WebJobs.Extensions.SqlServer.nuspec</NuspecFile>
     <NuspecProperties>$(NuspecProperties);version=$(PackageVersion)</NuspecProperties>
     <NuspecProperties>$(NuspecProperties);configuration=$(configuration)</NuspecProperties>
   </PropertyGroup>
