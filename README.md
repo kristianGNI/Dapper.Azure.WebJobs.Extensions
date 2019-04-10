@@ -1,4 +1,4 @@
-# Dapper sql server binding for Azure functions
+# Dapper.Azure.WebJobs.Extensions
 sql input/output binding for azure functions
 
 ## Using the binding
