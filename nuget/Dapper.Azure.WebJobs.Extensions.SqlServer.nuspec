@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>        
+        <id>Dapper.Azure.WebJobs.Extensions.SqlServer</id>   
+        <version>$version$</version>
+        <title>SQL binding for azure functions</title>   
+        <authors>Kristian Gundry Nielsen</authors>        
+        <owners>Kristian Gundry Nielsen</owners>
+        <licenseUrl>https://github.com/kristianGNI/Dapper.Azure.WebJobs.Extensions/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/kristianGNI/Dapper.Azure.WebJobs.Extensions</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>SQL binding for azure functions using Dapper, currently only working with MS SQL Server</description>
+        <copyright>Copyright (c) 2019 Kristian Gundry Nielsen</copyright>
+        <tags>azure-function sql dapper azure</tags>    
+        <summary>Dapper.Azure.WebJobs.Extensions is input and ouput binding for Azure functions</summary>
+        <dependencies>
+          <group targetFramework=".NETCoreApp2.2">
+            <dependency id="Dapper" version="1.60.1" exclude="Build,Analyzers" />
+            <dependency id="Microsoft.Azure.WebJobs" version="3.0.5" exclude="Build,Analyzers" />
+          </group>
+        </dependencies>         
+    </metadata>
+    <files>
+      <file src="..\src\Dapper.Azure.WebJobs.Extensions.SqlServer\bin\$configuration$\netcoreapp2.2\*.dll" target="lib\netcoreapp2.2\"/>
+    </files>
+</package>

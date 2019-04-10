@@ -8,6 +8,9 @@
 		},
 		{
 			"path": ".circleci"
+		},
+		{
+			"path": "nuget"
 		}
 	]
 }
