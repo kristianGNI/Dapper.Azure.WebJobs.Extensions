@@ -71,8 +71,6 @@ workflows:
             - build
             - test
           filters:
-            branches:
-              ignore: /.*/
             tags:
               only: /^([0]|[1-9]+[0-9]?)[.]([0]|[1-9]+[0-9]?)[.]([0]|[1-9]+[0-9]?)(?:-(beta|alpha|pre))?$/
       - publish:
