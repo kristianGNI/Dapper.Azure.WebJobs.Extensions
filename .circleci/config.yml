@@ -40,6 +40,9 @@ jobs:
           root: .
           paths:
             - ./dist
+      - store_artifacts:
+          path: ./dist/Dapper.Azure.WebJobs.Extensions.SqlServer.${CIRCLE_TAG}.nupkg
+          destination: Dapper.Azure.WebJobs.Extensions.SqlServer.${CIRCLE_TAG}.nupkg
 
   publish:
     <<: *job_defaults
