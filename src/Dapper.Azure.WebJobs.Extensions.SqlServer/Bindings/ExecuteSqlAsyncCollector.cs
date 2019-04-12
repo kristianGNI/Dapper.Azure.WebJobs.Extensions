@@ -20,7 +20,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             if (Utility.IsSqlScript(sql))
                 sql = Utility.GetTextFromFile(sql);
 
-            await GenericSqlStore.Execute(input, _dapperAttribute.SqlConnection, sql);
+            await GenericSqlStore.Execute(input, _dapperAttribute.SqlConnection, sql, _dapperAttribute.CommandTimeout);
         }
         public Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {

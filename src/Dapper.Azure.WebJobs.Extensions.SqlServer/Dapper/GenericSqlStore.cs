@@ -14,7 +14,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
 {
     internal class GenericSqlStore
     {
-        public static async Task Execute(SqlInput input, string connectionString, string sql)
+        public static async Task Execute(SqlInput input, string connectionString, string sql, int? commandTimeout)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
@@ -33,9 +33,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     try
                     {
                         if (isParameterizeSql)
-                            await connection.ExecuteAsync(sql, GetParameters(input.Parameters) as object, transaction: transaction).ConfigureAwait(false);                            
+                            await connection.ExecuteAsync(sql, GetParameters(input.Parameters) as object, transaction: transaction, commandTimeout: commandTimeout).ConfigureAwait(false);                            
                         else 
-                            await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
+                            await connection.ExecuteAsync(sql, transaction: transaction, commandTimeout: commandTimeout).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch (Exception ex)
@@ -46,7 +46,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 }
             }
         }
-        public static async Task<T> ExecuteQuery<T>(string connectionString, string sql, string parameters)
+        public static async Task<T> ExecuteQuery<T>(string connectionString, string sql, string parameters, int? commandTimeout)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
@@ -67,9 +67,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     try
                     {
                         if (isParameterizeSql)
-                            result = await connection.QueryAsync(sql, GetParameters(parameters, sql), transaction: transaction).ConfigureAwait(false);
+                            result = await connection.QueryAsync(sql, GetParameters(parameters, sql), transaction: transaction, commandTimeout: commandTimeout).ConfigureAwait(false);
                         else
-                            result = await connection.QueryAsync(sql, transaction: transaction).ConfigureAwait(false);
+                            result = await connection.QueryAsync(sql, transaction: transaction, commandTimeout: commandTimeout).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch(Exception ex){
