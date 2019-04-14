@@ -15,6 +15,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         [AutoResolve]
         public string Sql { get; set; }
         [AutoResolve]
-        public string parameters { get; set; }
+        public string Parameters { get; set; }
+        public int CommandTimeout { get; set; } = 30;
     }
 }

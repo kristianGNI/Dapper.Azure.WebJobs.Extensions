@@ -26,7 +26,8 @@ namespace Samples
 
         [FunctionName("InsertCustomerSample3")]
         public static  IList<Customer> InsertCustomerSample3([HttpTrigger] HttpRequestMessage req,
-                                            [Dapper(Sql = "insert.sql", SqlConnection = "SqlConnection")] out IList<Customer> customers,
+                                            [Dapper(Sql = "insert.sql", SqlConnection = "SqlConnection",
+                                            CommandTimeout = 60)] out IList<Customer> customers,
                                             ILogger log)
         {
             customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
@@ -36,7 +37,7 @@ namespace Samples
         [FunctionName("SelectCustomerSample1")]
         public static IList<Customer> SelectCustomerSample1([HttpTrigger] HttpRequestMessage req,
                                           [Dapper(Sql = "select.sql", SqlConnection = "SqlConnection", 
-                                                  parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
+                                                  Parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
                                           ILogger log)
         {     
             return customers;
@@ -46,7 +47,9 @@ namespace Samples
         public static IList<Customer> SelectCustomerSample2([HttpTrigger] HttpRequestMessage req,
                                           [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE FirstName = @FirstName",
                                                   SqlConnection = "SqlConnection", 
-                                                  parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
+                                                  Parameters = "FirstName:{Query.FirstName}",
+                                                  CommandTimeout = 60)
+                                                  ] IList<Customer> customers,
                                           ILogger log)
         {
             return customers;
