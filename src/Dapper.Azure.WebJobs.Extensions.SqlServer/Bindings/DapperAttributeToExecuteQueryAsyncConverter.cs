@@ -15,7 +15,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             if (Utility.IsSqlScript(sql))
                 sql = Utility.GetTextFromFile(attr.Sql);
 
-            return await GenericSqlStore.ExecuteQuery<T>(attr.SqlConnection, sql, attr.Parameters, attr.CommandTimeout);
+            return await GenericSqlStore.ExecuteQuery<T>(attr.SqlConnection, sql, attr.Parameters, attr.CommandTimeout, attr.IsolationLevel);
         }
     }
 }

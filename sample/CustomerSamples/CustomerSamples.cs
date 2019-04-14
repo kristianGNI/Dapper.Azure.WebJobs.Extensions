@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Data;
 
 namespace Samples
 {
@@ -18,7 +19,8 @@ namespace Samples
 
         [FunctionName("InsertCustomerSample2")]
         [return: Dapper(Sql = "INSERT INTO [Customers] ([FirstName], [LastName]) VALUES (@FirstName, @LastName)",
-                        SqlConnection = "SqlConnection")]
+                        SqlConnection = "SqlConnection",
+                        IsolationLevel = IsolationLevel.ReadCommitted)]
         public static Customer InsertCustomerSample2([HttpTrigger] Customer customer, ILogger log)
         {
            return customer;
@@ -37,7 +39,8 @@ namespace Samples
         [FunctionName("SelectCustomerSample1")]
         public static IList<Customer> SelectCustomerSample1([HttpTrigger] HttpRequestMessage req,
                                           [Dapper(Sql = "select.sql", SqlConnection = "SqlConnection", 
-                                                  Parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
+                                                  Parameters = "FirstName:{Query.FirstName}",
+                                                  IsolationLevel = IsolationLevel.ReadCommitted)] IList<Customer> customers,
                                           ILogger log)
         {     
             return customers;

@@ -14,7 +14,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
 {
     internal class GenericSqlStore
     {
-        public static async Task Execute(SqlInput input, string connectionString, string sql, int? commandTimeout)
+        public static async Task Execute(SqlInput input, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
@@ -28,7 +28,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync().ConfigureAwait(false);
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransaction(isolationLevel))
                 {
                     try
                     {
@@ -46,7 +46,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 }
             }
         }
-        public static async Task<T> ExecuteQuery<T>(string connectionString, string sql, string parameters, int? commandTimeout)
+        public static async Task<T> ExecuteQuery<T>(string connectionString, string sql, string parameters, int? commandTimeout, IsolationLevel isolationLevel)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
@@ -62,7 +62,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             {
                 IEnumerable<dynamic> result;
                 await connection.OpenAsync().ConfigureAwait(false);
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransaction(isolationLevel))
                 {
                     try
                     {
