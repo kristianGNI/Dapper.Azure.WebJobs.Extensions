@@ -19,5 +19,6 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         public string Parameters { get; set; }
         public int CommandTimeout { get; set; } = 30;
         public IsolationLevel IsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
+        public CommandType CommandType { get; set; } = CommandType.Text;
     }
 }
