@@ -19,8 +19,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            var isParameterizeSql = Utility.IsParameterizeSql(sql, commandType, input);
+            
+            var isParameterizeSql = Utility.IsParameterizeSql(sql);
             if (isParameterizeSql)
             {
                 if (input == null || input.Parameters == null)
@@ -34,11 +34,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     try
                     {
-                        if (isParameterizeSql)
-                            await connection.ExecuteAsync(sql, Utility.GetParameters(input.Parameters) as object, 
-                                                        transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);                            
-                        else 
-                            await connection.ExecuteAsync(sql, transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
+                        await connection.ExecuteAsync(sql, Utility.GetParameters(input.Parameters) as object, 
+                                                        transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch (Exception ex)
@@ -55,7 +52,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
 
-            var isParameterizeSql = Utility.IsParameterizeSql(sql, commandType, parameters);
+            var isParameterizeSql = Utility.IsParameterizeSql(sql);
             if (isParameterizeSql)
             {
                 if (string.IsNullOrEmpty(parameters))
@@ -70,11 +67,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     try
                     {
-                        if (isParameterizeSql)
-                            result = await connection.QueryAsync(sql, Utility.GetParameters(parameters, sql, commandType), 
+                        
+                        result = await connection.QueryAsync(sql, Utility.GetParameters(parameters, sql), 
                                                                 transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
-                        else
-                            result = await connection.QueryAsync(sql, transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         transaction.Commit();
                     }
                     catch(Exception ex){

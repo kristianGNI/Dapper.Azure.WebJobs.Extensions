@@ -76,36 +76,31 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static object GetParameters(dynamic dynParameters)
         {
-            if(dynParameters == null) throw new System.ArgumentNullException(nameof(dynParameters));
+            if(dynParameters == null) return null;
 
             if (Utility.IsEnumerable(dynParameters))
                 return ((IEnumerable)dynParameters).Cast<object>().ToArray();            
             else
                 return new[] { dynParameters };
         }
-        public static object GetParameters(string strParameters, string sql, CommandType commandType)
+        public static object GetParameters(string strParameters, string sql)
         {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
+            if (string.IsNullOrEmpty(strParameters)) return null;
 
             object parameters = null;
             if (Utility.IsJson(strParameters))
-            {
                 parameters = JsonConvert.DeserializeObject<ExpandoObject>(strParameters, new ExpandoObjectConverter());
-            }
-            else if(commandType == CommandType.StoredProcedure){
-                parameters = GetParameters(strParameters);
-            }
+            else if(Utility.IsParameterizeSql(sql))
+                parameters =  GetMatchedParametersFromString(strParameters, sql);
             else
-            {
-                parameters =  GetParameters(strParameters, sql);
-            }
+                parameters = GetParametersFromString(strParameters);
+                
             return parameters;
         }
-        public static object GetParameters(string strParameters, string sql)
+        public static object GetMatchedParametersFromString(string strParameters, string sql)
         {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
+            if (string.IsNullOrEmpty(strParameters)) return null;
             
             var sqlParameter = Utility.GetWords(sql);
             var values = Utility.StringToDict(strParameters);
@@ -116,9 +111,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
             }
             return parameters;
         }
-        public static object GetParameters(string strParameters)
+        public static object GetParametersFromString(string strParameters)
         {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
+            if (string.IsNullOrEmpty(strParameters)) return null;
                         
             var values = Utility.StringToDict(strParameters);
             object parameters = new DynamicParameters();
@@ -127,23 +122,6 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
                 ((DynamicParameters)parameters).Add("@" + item.Key, item.Value, null, ParameterDirection.Input);
             }
             return parameters;
-        }
-
-        public static bool IsParameterizeSql(string sql, CommandType commandType, SqlInput input)
-        {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            if(commandType == CommandType.StoredProcedure && input != null && input.Parameters != null) 
-                return true;
-            return IsParameterizeSql(sql);;
-        }
-        public static bool IsParameterizeSql(string sql, CommandType commandType, string strParameters)
-        {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            if(commandType == CommandType.StoredProcedure && !string.IsNullOrEmpty(strParameters)) 
-                return true;
-            return IsParameterizeSql(sql);
         }
         public static bool IsParameterizeSql(string sql)
         {
