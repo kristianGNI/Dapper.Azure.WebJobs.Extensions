@@ -101,4 +101,15 @@ public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
 }
 ```
 
-
+```csharp 
+[FunctionName("SelectCustomerSample4")]
+public static IList<Customer> SelectCustomerSample4dotnet ([HttpTrigger] HttpRequestMessage req,
+                                    [Dapper(Sql = "SpGetCustomerByFirstname",
+                                            SqlConnection = "SqlConnection",
+                                            Parameters = "FirstName:{Query.FirstName}",
+                                            CommandType = CommandType.StoredProcedure)] IList<Customer> customers,
+                                    ILogger log)
+{
+    return customers;
+}
+```
