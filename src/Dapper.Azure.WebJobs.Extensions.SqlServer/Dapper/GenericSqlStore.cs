@@ -19,7 +19,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-            var isParameterizeSql = IsParameterizeSql(sql);
+
+            var isParameterizeSql = Utility.IsParameterizeSql(sql, commandType, input);
             if (isParameterizeSql)
             {
                 if (input == null || input.Parameters == null)
@@ -34,7 +35,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     try
                     {
                         if (isParameterizeSql)
-                            await connection.ExecuteAsync(sql, GetParameters(input.Parameters) as object, 
+                            await connection.ExecuteAsync(sql, Utility.GetParameters(input.Parameters) as object, 
                                                         transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);                            
                         else 
                             await connection.ExecuteAsync(sql, transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
@@ -54,7 +55,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
 
-            var isParameterizeSql = IsParameterizeSql(sql);
+            var isParameterizeSql = Utility.IsParameterizeSql(sql, commandType, parameters);
             if (isParameterizeSql)
             {
                 if (string.IsNullOrEmpty(parameters))
@@ -70,7 +71,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                     try
                     {
                         if (isParameterizeSql)
-                            result = await connection.QueryAsync(sql, GetParameters(parameters, sql), 
+                            result = await connection.QueryAsync(sql, Utility.GetParameters(parameters, sql, commandType), 
                                                                 transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         else
                             result = await connection.QueryAsync(sql, transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
@@ -84,43 +85,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 return HandleQueryResult<T>(result);
             }
         }
-        private static object GetParameters(dynamic dynParameters)
-        {
-            if(dynParameters == null) throw new System.ArgumentNullException(nameof(dynParameters));
-
-            if (Utility.IsEnumerable(dynParameters))
-                return ((IEnumerable)dynParameters).Cast<object>().ToArray();            
-            else
-                return new[] { dynParameters };
-        }
-        private static object GetParameters(string strParameters, string sql)
-        {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            object parameters = null;
-            if (Utility.IsJson(strParameters))
-            {
-                parameters = JsonConvert.DeserializeObject<ExpandoObject>(strParameters, new ExpandoObjectConverter());
-            }
-            else
-            {
-                var sqlParameter = Utility.GetWords(sql);
-                var values = Utility.StringToDict(strParameters);
-                parameters = new DynamicParameters();
-                for (int i = 0; i < sqlParameter.Count(); i++)
-                {
-                    ((DynamicParameters)parameters).Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)], null, ParameterDirection.Input);
-                }
-            }
-            return parameters;
-        }
-        private static bool IsParameterizeSql(string sql)
-        {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-            var sqlParameters = Utility.GetWords(sql);
-            return sqlParameters.Count() > 0;
-        }
+        
         private static T HandleQueryResult<T>(IEnumerable<dynamic> result)
         {
             T resultValue = default(T);
