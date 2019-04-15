@@ -54,9 +54,9 @@ public static  IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
 ```csharp
 [FunctionName("InsertCustomerSample4")]
 public static  IList<Customer> InsertCustomerSample4([HttpTrigger] HttpRequestMessage req,
-                                    [Dapper(Sql = "SpInsertCustomer", SqlConnection = "SqlConnection",
+                                    [Dapper(Sql = "EXEC SpInsertCustomer @FirstName, @LastName", SqlConnection = "SqlConnection",
                                     CommandTimeout = 60,
-                                    CommandType = CommandType.StoredProcedure)] out IList<Customer> customers,
+                                    CommandType = CommandType.Text)] out IList<Customer> customers,
                                     ILogger log)
 {
     customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
