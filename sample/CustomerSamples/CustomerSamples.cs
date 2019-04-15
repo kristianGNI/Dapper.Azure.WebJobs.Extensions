@@ -40,7 +40,7 @@ namespace Samples
         public static  IList<Customer> InsertCustomerSample4([HttpTrigger] HttpRequestMessage req,
                                             [Dapper(Sql = "SpInsertCustomer", SqlConnection = "SqlConnection",
                                             CommandTimeout = 60,
-                                            CommandType = CommandType.StoredProcedure)] out IList<Customer> customers,
+                                            CommandType = CommandType.Text)] out IList<Customer> customers,
                                             ILogger log)
         {
             customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
@@ -79,7 +79,7 @@ namespace Samples
         }
 
         [FunctionName("SelectCustomerSample4")]
-        public static IList<Customer> SelectCustomerSample4dotnet ([HttpTrigger] HttpRequestMessage req,
+        public static IList<Customer> SelectCustomerSample4 ([HttpTrigger] HttpRequestMessage req,
                                           [Dapper(Sql = "SpGetCustomerByFirstname",
                                                   SqlConnection = "SqlConnection",
                                                   Parameters = "FirstName:{Query.FirstName}",
