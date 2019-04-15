@@ -34,7 +34,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     try
                     {
-                        await connection.ExecuteAsync(sql, Utility.GetParameters(input.Parameters) as object, 
+                        var parameters = Utility.GetParameters(input.Parameters) as object;
+                        await connection.ExecuteAsync(sql, parameters, 
                                                         transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         transaction.Commit();
                     }
@@ -67,8 +68,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     try
                     {
-                        
-                        result = await connection.QueryAsync(sql, Utility.GetParameters(parameters, sql), 
+                        var queryParameters = Utility.GetParameters(parameters, sql);                        
+                        result = await connection.QueryAsync(sql, queryParameters, 
                                                                 transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         transaction.Commit();
                     }

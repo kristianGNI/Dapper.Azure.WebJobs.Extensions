@@ -38,9 +38,9 @@ namespace Samples
 
         [FunctionName("InsertCustomerSample4")]
         public static  IList<Customer> InsertCustomerSample4([HttpTrigger] HttpRequestMessage req,
-                                            [Dapper(Sql = "EXEC SpInsertCustomer @FirstName, @LastName", SqlConnection = "SqlConnection",
+                                            [Dapper(Sql = "SpInsertCustomer2", SqlConnection = "SqlConnection",
                                             CommandTimeout = 60,
-                                            CommandType = CommandType.Text)] out IList<Customer> customers,
+                                            CommandType = CommandType.StoredProcedure)] out IList<Customer> customers,
                                             ILogger log)
         {
             customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
