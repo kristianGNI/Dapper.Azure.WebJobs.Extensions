@@ -51,6 +51,19 @@ public static  IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
 }
 ```
 
+```csharp
+[FunctionName("InsertCustomerSample4")]
+public static  IList<Customer> InsertCustomerSample4([HttpTrigger] HttpRequestMessage req,
+                                    [Dapper(Sql = "EXEC SpInsertCustomer @FirstName, @LastName", SqlConnection = "SqlConnection",
+                                    CommandTimeout = 60,
+                                    CommandType = CommandType.Text)] out IList<Customer> customers,
+                                    ILogger log)
+{
+    customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
+    return customers;
+}
+```
+
 #### Input binding samples
 
 ```csharp 
@@ -83,6 +96,19 @@ public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
                                   [Dapper(Sql = "SELECT * FROM [dbo].[Customers]",
                                           SqlConnection = "SqlConnection")] IList<Customer> customers,
                                           ILogger log)
+{
+    return customers;
+}
+```
+
+```csharp 
+[FunctionName("SelectCustomerSample4")]
+public static IList<Customer> SelectCustomerSample4dotnet ([HttpTrigger] HttpRequestMessage req,
+                                    [Dapper(Sql = "SpGetCustomerByFirstname",
+                                            SqlConnection = "SqlConnection",
+                                            Parameters = "FirstName:{Query.FirstName}",
+                                            CommandType = CommandType.StoredProcedure)] IList<Customer> customers,
+                                    ILogger log)
 {
     return customers;
 }

@@ -34,6 +34,17 @@ namespace Samples
         {
             customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
             return customers;
+        } 
+
+        [FunctionName("InsertCustomerSample4")]
+        public static  IList<Customer> InsertCustomerSample4([HttpTrigger] HttpRequestMessage req,
+                                            [Dapper(Sql = "EXEC SpInsertCustomer @FirstName, @LastName", SqlConnection = "SqlConnection",
+                                            CommandTimeout = 60,
+                                            CommandType = CommandType.Text)] out IList<Customer> customers,
+                                            ILogger log)
+        {
+            customers = JsonConvert.DeserializeObject<IList<Customer>>(req.Content.ReadAsStringAsync().Result);
+            return customers;
         }
 
         [FunctionName("SelectCustomerSample1")]
@@ -62,6 +73,17 @@ namespace Samples
         public static IList<Customer> SelectCustomerSample3([HttpTrigger] HttpRequestMessage req,
                                           [Dapper(Sql = "SELECT * FROM [dbo].[Customers]",
                                                   SqlConnection = "SqlConnection")] IList<Customer> customers,
+                                          ILogger log)
+        {
+            return customers;
+        }
+
+        [FunctionName("SelectCustomerSample4")]
+        public static IList<Customer> SelectCustomerSample4 ([HttpTrigger] HttpRequestMessage req,
+                                          [Dapper(Sql = "SpGetCustomerByFirstname",
+                                                  SqlConnection = "SqlConnection",
+                                                  Parameters = "FirstName:{Query.FirstName}",
+                                                  CommandType = CommandType.StoredProcedure)] IList<Customer> customers,
                                           ILogger log)
         {
             return customers;
