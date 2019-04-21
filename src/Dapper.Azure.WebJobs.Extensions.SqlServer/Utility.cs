@@ -66,78 +66,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
                     .Where(part => part.Length == 2)
                     .ToDictionary(sp => sp[0].Trim(), sp => sp[1].Trim());
         }
-        public static bool IsEnumerable(Type type)
-        {
-            return (type.GetInterface(nameof(IEnumerable)) != null);
-        }
         public static bool IsEnumerable(object type)
         {
             return type is IEnumerable;
-        }
-        public static DynamicParameters GetParameters(dynamic dynParameters)
-        {
-            if(dynParameters == null) return null;
-            DynamicParameters parameters = new DynamicParameters();
-
-            if (Utility.IsEnumerable(dynParameters))
-                ((IEnumerable)dynParameters).Cast<object>().ToList().ForEach(x=> parameters.AddDynamicParams(x));            
-            else
-                parameters.AddDynamicParams(dynParameters);
-            return parameters;
-        }
-        public static DynamicParameters GetParameters(string strParameters, string sql)
-        {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-            if (string.IsNullOrEmpty(strParameters)) return null;
-
-            DynamicParameters parameters;
-            if (Utility.IsJson(strParameters))
-                parameters = GetParametersFromJSON(strParameters);
-            else if(Utility.IsParameterizeSql(sql))
-                parameters =  GetMatchedParametersFromString(strParameters, sql);
-            else
-                parameters = GetParametersFromString(strParameters);                
-            return parameters;
-        }
-        public static DynamicParameters GetMatchedParametersFromString(string strParameters, string sql)
-        {
-            if (string.IsNullOrEmpty(strParameters)) return null;
-            
-            var sqlParameter = Utility.GetWords(sql);
-            var values = Utility.StringToDict(strParameters);
-            DynamicParameters parameters = new DynamicParameters();
-            for (int i = 0; i < sqlParameter.Count(); i++)
-            {
-                ((DynamicParameters)parameters).Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)], null, ParameterDirection.Input);
-            }
-            return parameters;
-        }
-        public static DynamicParameters GetParametersFromString(string strParameters)
-        {
-            if (string.IsNullOrEmpty(strParameters)) return null;
-                        
-            var values = Utility.StringToDict(strParameters);
-            DynamicParameters parameters = new DynamicParameters();
-            foreach (var item in values)
-            {
-                ((DynamicParameters)parameters).Add("@" + item.Key, item.Value, null, ParameterDirection.Input);
-            }
-            return parameters;
-        }
-        public static DynamicParameters GetParametersFromJSON(string json)
-        {
-            if (string.IsNullOrEmpty(json)) return null;
-            DynamicParameters parameters = new DynamicParameters();
-            var objects = JsonConvert.DeserializeObject(json);
-            if(IsEnumerable(parameters)){
-                ((IEnumerable)parameters).Cast<Object>().ToList().ForEach(x=> 
-                    parameters.AddDynamicParams(x)
-                );
-            }
-            else{
-                parameters.AddDynamicParams(objects);
-            }
-            return parameters;
         }
         public static bool IsParameterizeSql(string sql)
         {

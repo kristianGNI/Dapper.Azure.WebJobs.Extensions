@@ -1,5 +1,7 @@
 ﻿using Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper;
 using Microsoft.Azure.WebJobs;
+using System.Collections;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,13 +21,23 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             string sql = _dapperAttribute.Sql;
             if (Utility.IsSqlScript(sql))
                 sql = Utility.GetTextFromFile(sql);
-
-            await GenericSqlStore.Execute(input, _dapperAttribute.SqlConnection, sql, _dapperAttribute.CommandTimeout, _dapperAttribute.IsolationLevel, _dapperAttribute.CommandType);
+            var parameters = GetParameters(input.Parameters);
+            await GenericSqlStore.Execute(parameters , _dapperAttribute.SqlConnection, sql, _dapperAttribute.CommandTimeout, _dapperAttribute.IsolationLevel, _dapperAttribute.CommandType);
         }
         public Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
-        
+        private DynamicParameters GetParameters(dynamic dynParameters)
+        {
+            if(dynParameters == null) return null;
+            DynamicParameters parameters = new DynamicParameters();
+
+            if (Utility.IsEnumerable(dynParameters))
+                ((IEnumerable)dynParameters).Cast<object>().ToList().ForEach(x=> parameters.AddDynamicParams(x));            
+            else
+                parameters.AddDynamicParams(dynParameters);
+            return parameters;
+        }        
     }
 }

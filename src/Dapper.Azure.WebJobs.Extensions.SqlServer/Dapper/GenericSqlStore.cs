@@ -14,7 +14,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
 {
     internal class GenericSqlStore
     {
-        public static async Task Execute(SqlInput input, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
+        public static async Task Execute(DynamicParameters parameters, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
                                         CommandType commandType)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
@@ -23,8 +23,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             var isParameterizeSql = Utility.IsParameterizeSql(sql);
             if (isParameterizeSql)
             {
-                if (input == null || input.Parameters == null)
-                    throw new System.ArgumentNullException(nameof(input), "The sql statement is parameterized therefore input can't be null or empty");
+                if (parameters == null)
+                    throw new System.ArgumentNullException(nameof(parameters), "The sql statement is parameterized therefore input can't be null or empty");
             }
 
             using (var connection = new SqlConnection(connectionString))
@@ -34,7 +34,6 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 {
                     try
                     {
-                        DynamicParameters parameters = Utility.GetParameters(input.Parameters);
                         await connection.ExecuteAsync(sql, parameters, 
                                                         transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         transaction.Commit();
@@ -47,7 +46,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 }
             }
         }
-        public static async Task<T> ExecuteQuery<T>(string connectionString, string sql, string parameters, int? commandTimeout, IsolationLevel isolationLevel, 
+        public static async Task<T> ExecuteQuery<T>(DynamicParameters parameters, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
                                                     CommandType commandType)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
@@ -56,7 +55,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             var isParameterizeSql = Utility.IsParameterizeSql(sql);
             if (isParameterizeSql)
             {
-                if (string.IsNullOrEmpty(parameters))
+                if (parameters == null)
                     throw new System.ArgumentNullException(nameof(parameters), "The sql statement is parameterized therefore parameters can't be null or empty");
             }
 
@@ -67,9 +66,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 using (var transaction = connection.BeginTransaction(isolationLevel))
                 {
                     try
-                    {
-                        DynamicParameters queryParameters = Utility.GetParameters(parameters, sql);                        
-                        result = await connection.QueryAsync(sql, queryParameters, 
+                    {                      
+                        result = await connection.QueryAsync(sql, parameters, 
                                                                 transaction: transaction, commandTimeout: commandTimeout, commandType: commandType).ConfigureAwait(false);
                         transaction.Commit();
                     }
@@ -87,10 +85,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             T resultValue = default(T);
             if (result != null && result.Count() > 0)
             {
-                var resultType = typeof(T);
                 string json;
-
-                if (Utility.IsEnumerable(resultType))
+                if (result.Count() > 1)
                     json = JsonConvert.SerializeObject(result);
                 else
                     json = JsonConvert.SerializeObject(result.FirstOrDefault());
