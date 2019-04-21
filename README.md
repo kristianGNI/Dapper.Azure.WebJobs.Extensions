@@ -1,5 +1,11 @@
 # Dapper.Azure.WebJobs.Extensions
-sql input/output binding for azure functions
+Extension for Azure functions input/output bindings to natively use Dapper sql calls.  
+[Azure Functions and Bindings Reference](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+
+Azure functions can be triggered from various sources, most relevantly here Http requests.  As part of an Http request trigger, there can be a need to retrieve additional data from a database (additional input), and then also simply a need to update or create data in a database (output data).  By doing this declaratively in the bindings, the overhead of using Dapper is hidden into a simple set of statements.
+
+This extension allows for a native binding to retrieve or set data automatically via Dapper to a SQL source.  This effectively allows the Azure function to be a remotely Http triggerable function with a declarative and simpler means of handling data.
+
 
 ## Using the binding
 ### C#
