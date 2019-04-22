@@ -6,6 +6,17 @@ Azure functions can be triggered from various sources, most relevantly here Http
 
 This extension allows for a native binding to retrieve or set data automatically via Dapper to a SQL source.  This effectively allows the Azure function to be a remotely Http triggerable function with a declarative and simpler means of handling data.
 
+## Installation
+Dapper.Azure.WebJobs.Extensions is available via NuGet:
+
+```
+Install-Package Dapper.Azure.WebJobs.Extensions.SqlServer
+```
+or
+```
+dotnet add package Dapper.Azure.WebJobs.Extensions.SqlServer
+```
+
 
 ## Using the binding
 ### C#
