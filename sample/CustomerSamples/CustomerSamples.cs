@@ -58,15 +58,15 @@ namespace Samples
         }
 
         [FunctionName("SelectCustomerSample2")]
-        public static IList<Customer> SelectCustomerSample2([HttpTrigger] HttpRequestMessage req,
-                                          [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE FirstName = @FirstName",
+        public static Customer SelectCustomerSample2([HttpTrigger] HttpRequestMessage req,
+                                          [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE CustomerNumber = @CustomerNumber",
                                                   SqlConnection = "SqlConnection", 
-                                                  Parameters = "FirstName:{Query.FirstName}",
+                                                  Parameters = "CustomerNumber:{Query.CustomerNumber}",
                                                   CommandTimeout = 60)
-                                                  ] IList<Customer> customers,
+                                                  ] Customer customer,
                                           ILogger log)
         {
-            return customers;
+            return customer;
         }
 
         [FunctionName("SelectCustomerSample3")]
