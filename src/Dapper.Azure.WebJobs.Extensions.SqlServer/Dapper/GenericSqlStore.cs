@@ -14,7 +14,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
 {
     internal class GenericSqlStore
     {
-        public static async Task Execute(DynamicParameters parameters, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
+        public static async Task Execute(IEnumerable<DynamicParameters> parameters, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
                                         CommandType commandType)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
@@ -23,7 +23,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             var isParameterizeSql = Utility.IsParameterizeSql(sql);
             if (isParameterizeSql)
             {
-                if (parameters == null)
+                if (parameters == null && parameters.Count() > 0)
                     throw new System.ArgumentNullException(nameof(parameters), "The sql statement is parameterized therefore input can't be null or empty");
             }
 

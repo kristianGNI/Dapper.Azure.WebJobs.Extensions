@@ -1,6 +1,7 @@
 ﻿using Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper;
 using Microsoft.Azure.WebJobs;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,15 +29,17 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
         {
             return Task.CompletedTask;
         }
-        private DynamicParameters GetParameters(dynamic dynParameters)
+        private IEnumerable<DynamicParameters> GetParameters(dynamic dynParameters)
         {
             if(dynParameters == null) return null;
-            DynamicParameters parameters = new DynamicParameters();
-
-            if (Utility.IsEnumerable(dynParameters))
-                ((IEnumerable)dynParameters).Cast<object>().ToList().ForEach(x=> parameters.AddDynamicParams(x));            
+            IEnumerable<DynamicParameters> parameters;
+            
+            if (Utility.IsEnumerable(dynParameters)){
+                var list = ((IEnumerable)dynParameters).Cast<object>().ToList();
+                parameters = from item in list select new DynamicParameters(item);
+            }         
             else
-                parameters.AddDynamicParams(dynParameters);
+                parameters  = new List<DynamicParameters>(){ new DynamicParameters(dynParameters)};
             return parameters;
         }        
     }
