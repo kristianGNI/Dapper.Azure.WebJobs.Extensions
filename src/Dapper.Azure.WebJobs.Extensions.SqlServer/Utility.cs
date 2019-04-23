@@ -59,6 +59,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static string GetTextFromFile(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName)) throw new System.ArgumentNullException(nameof(fileName));
+
             string path = Path.Combine(Environment.CurrentDirectory, fileName);
             return System.IO.File.ReadAllText(path);
         }
