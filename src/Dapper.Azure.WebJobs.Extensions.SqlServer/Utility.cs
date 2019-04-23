@@ -66,6 +66,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static Dictionary<string, string> StringToDict(string input)
         {
+            if (string.IsNullOrEmpty(input)) throw new System.ArgumentNullException(nameof(input));
             return input
                     .Split(',')
                     .Select(part => part.Split(':'))
