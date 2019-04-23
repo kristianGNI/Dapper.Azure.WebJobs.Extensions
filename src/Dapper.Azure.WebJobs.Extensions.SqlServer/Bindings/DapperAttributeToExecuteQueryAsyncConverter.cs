@@ -60,14 +60,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             if (string.IsNullOrEmpty(json)) return null;
             DynamicParameters parameters = new DynamicParameters();
             var objects = JsonConvert.DeserializeObject(json);
-            if(Utility.IsEnumerable(parameters)){
-                ((IEnumerable)parameters).Cast<Object>().ToList().ForEach(x=> 
-                    parameters.AddDynamicParams(x)
-                );
-            }
-            else{
-                parameters.AddDynamicParams(objects);
-            }
+            parameters.AddDynamicParams(objects);
+            
             return parameters;
         }
      }
