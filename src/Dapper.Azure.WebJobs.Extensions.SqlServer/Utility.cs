@@ -35,6 +35,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static string[] GetWords(string input)
         {
+            if (string.IsNullOrEmpty(input)) throw new System.ArgumentNullException(nameof(input));
+
             MatchCollection matches = Regex.Matches(input, @"\B@\w+");
 
             var words = from m in matches.Cast<Match>()
@@ -45,6 +47,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static string TrimSuffix(string word)
         {
+            if (string.IsNullOrEmpty(word)) throw new System.ArgumentNullException(nameof(word));
+
             int apostropheLocation = word.IndexOf('\'');
             if (apostropheLocation != -1)
             {
@@ -55,11 +59,14 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static string GetTextFromFile(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName)) throw new System.ArgumentNullException(nameof(fileName));
+
             string path = Path.Combine(Environment.CurrentDirectory, fileName);
             return System.IO.File.ReadAllText(path);
         }
         public static Dictionary<string, string> StringToDict(string input)
         {
+            if (string.IsNullOrEmpty(input)) throw new System.ArgumentNullException(nameof(input));
             return input
                     .Split(',')
                     .Select(part => part.Split(':'))
@@ -72,7 +79,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static bool IsParameterizeSql(string sql)
         {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
+            if (string.IsNullOrEmpty(sql)) return false;
+            
             var sqlParameters = Utility.GetWords(sql);
             return sqlParameters.Count() > 0;
         }

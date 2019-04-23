@@ -23,7 +23,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
             var isParameterizeSql = Utility.IsParameterizeSql(sql);
             if (isParameterizeSql)
             {
-                if (parameters == null && parameters.Count() > 0)
+                if (parameters == null || parameters.Count() == 0)
                     throw new System.ArgumentNullException(nameof(parameters), "The sql statement is parameterized therefore input can't be null or empty");
             }
 
