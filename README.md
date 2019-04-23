@@ -97,13 +97,15 @@ public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
   
 ```csharp 
 [FunctionName("SelectCustomerSample2")]
-public static IList<Customer> Run([HttpTrigger] HttpRequestMessage req,
-                                  [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE FirstName = @FirstName",
-                                          SqlConnection = "SqlConnection", 
-                                          Parameters = "FirstName:{Query.FirstName}")] IList<Customer> customers,
-                                          ILogger log)
+public static Customer SelectCustomerSample2([HttpTrigger] HttpRequestMessage req,
+                                    [Dapper(Sql = "SELECT * FROM [dbo].[Customers] WHERE CustomerNumber = @CustomerNumber",
+                                            SqlConnection = "SqlConnection", 
+                                            Parameters = "CustomerNumber:{Query.CustomerNumber}",
+                                            CommandTimeout = 60)
+                                            ] Customer customer,
+                                    ILogger log)
 {
-    return customers;
+    return customer;
 }
 ```
   

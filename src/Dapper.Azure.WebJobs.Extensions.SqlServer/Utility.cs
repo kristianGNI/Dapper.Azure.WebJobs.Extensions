@@ -66,84 +66,9 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
                     .Where(part => part.Length == 2)
                     .ToDictionary(sp => sp[0].Trim(), sp => sp[1].Trim());
         }
-        public static bool IsEnumerable(Type type)
-        {
-            return (type.GetInterface(nameof(IEnumerable)) != null);
-        }
-        public static bool IsEnumerable(dynamic type)
+        public static bool IsEnumerable(object type)
         {
             return type is IEnumerable;
-        }
-        public static object GetParameters(dynamic dynParameters)
-        {
-            if(dynParameters == null) throw new System.ArgumentNullException(nameof(dynParameters));
-
-            if (Utility.IsEnumerable(dynParameters))
-                return ((IEnumerable)dynParameters).Cast<object>().ToArray();            
-            else
-                return new[] { dynParameters };
-        }
-        public static object GetParameters(string strParameters, string sql, CommandType commandType)
-        {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            object parameters = null;
-            if (Utility.IsJson(strParameters))
-            {
-                parameters = JsonConvert.DeserializeObject<ExpandoObject>(strParameters, new ExpandoObjectConverter());
-            }
-            else if(commandType == CommandType.StoredProcedure){
-                parameters = GetParameters(strParameters);
-            }
-            else
-            {
-                parameters =  GetParameters(strParameters, sql);
-            }
-            return parameters;
-        }
-        public static object GetParameters(string strParameters, string sql)
-        {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-            
-            var sqlParameter = Utility.GetWords(sql);
-            var values = Utility.StringToDict(strParameters);
-            object parameters = new DynamicParameters();
-            for (int i = 0; i < sqlParameter.Count(); i++)
-            {
-                ((DynamicParameters)parameters).Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)], null, ParameterDirection.Input);
-            }
-            return parameters;
-        }
-        public static object GetParameters(string strParameters)
-        {
-            if (string.IsNullOrEmpty(strParameters)) throw new System.ArgumentNullException(nameof(strParameters));
-                        
-            var values = Utility.StringToDict(strParameters);
-            object parameters = new DynamicParameters();
-            foreach (var item in values)
-            {
-                ((DynamicParameters)parameters).Add("@" + item.Key, item.Value, null, ParameterDirection.Input);
-            }
-            return parameters;
-        }
-
-        public static bool IsParameterizeSql(string sql, CommandType commandType, SqlInput input)
-        {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            if(commandType == CommandType.StoredProcedure && input != null && input.Parameters != null) 
-                return true;
-            return IsParameterizeSql(sql);;
-        }
-        public static bool IsParameterizeSql(string sql, CommandType commandType, string strParameters)
-        {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            if(commandType == CommandType.StoredProcedure && !string.IsNullOrEmpty(strParameters)) 
-                return true;
-            return IsParameterizeSql(sql);
         }
         public static bool IsParameterizeSql(string sql)
         {
