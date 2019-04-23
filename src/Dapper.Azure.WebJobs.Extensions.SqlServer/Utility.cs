@@ -79,7 +79,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static bool IsParameterizeSql(string sql)
         {
-            if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
+            if (string.IsNullOrEmpty(sql)) return false;
+            
             var sqlParameters = Utility.GetWords(sql);
             return sqlParameters.Count() > 0;
         }
