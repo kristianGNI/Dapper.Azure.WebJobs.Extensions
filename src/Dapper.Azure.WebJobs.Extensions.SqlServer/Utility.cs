@@ -36,7 +36,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         public static string[] GetWords(string input)
         {
             if (string.IsNullOrEmpty(input)) throw new System.ArgumentNullException(nameof(input));
-            
+
             MatchCollection matches = Regex.Matches(input, @"\B@\w+");
 
             var words = from m in matches.Cast<Match>()
@@ -47,6 +47,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
         }
         public static string TrimSuffix(string word)
         {
+            if (string.IsNullOrEmpty(word)) throw new System.ArgumentNullException(nameof(word));
+
             int apostropheLocation = word.IndexOf('\'');
             if (apostropheLocation != -1)
             {
