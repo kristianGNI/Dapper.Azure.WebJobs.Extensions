@@ -69,7 +69,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
             if (string.IsNullOrEmpty(input)) throw new System.ArgumentNullException(nameof(input));
             return input
                     .Split(',')
-                    .Select(part => part.Split(':'))
+                    .Select(part => part.Split(':', 2))
                     .Where(part => part.Length == 2)
                     .ToDictionary(sp => sp[0].Trim(), sp => sp[1].Trim());
         }
