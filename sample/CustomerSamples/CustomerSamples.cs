@@ -96,7 +96,7 @@ namespace Samples
                                           [Dapper(Sql = "select2.sql",
                                                   SqlConnection = "SqlConnection",
                                                   Parameters = "Processed:{datetime:yyyy-MM-dd HH:mm:ss}")] List<Customer> customers,
-                                          [ServiceBus("myqueue", Connection = "myconnection")] ICollector<Customer> outputSbQueue,
+                                          [ServiceBus("myqueue", Connection = "ConnectionStrings:ServiceBusConnection")] ICollector<Customer> outputSbQueue,
                                           ILogger log)
         {
             customers.ForEach(x=> outputSbQueue.Add(x));
