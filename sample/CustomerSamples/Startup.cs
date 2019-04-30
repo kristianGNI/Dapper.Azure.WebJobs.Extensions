@@ -11,6 +11,7 @@ namespace CustomerSamples
         public void Configure(IWebJobsBuilder builder)
         {
             builder.AddDapperSqlServer();
+            builder.AddServiceBus();
         }
     }
 }
