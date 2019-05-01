@@ -39,7 +39,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             DynamicParameters parameters = new DynamicParameters();
             for (int i = 0; i < sqlParameter.Count(); i++)
             {
-                ((DynamicParameters)parameters).Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)], null, ParameterDirection.Input);
+                parameters.Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)]);
             }
             return parameters;
         }
@@ -51,7 +51,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             DynamicParameters parameters = new DynamicParameters();
             foreach (var item in values)
             {
-                ((DynamicParameters)parameters).Add("@" + item.Key, item.Value, null, ParameterDirection.Input);
+                parameters.Add("@" + item.Key, item.Value);
             }
             return parameters;
         }

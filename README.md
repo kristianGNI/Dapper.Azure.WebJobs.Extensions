@@ -21,6 +21,7 @@ dotnet add package Dapper.Azure.WebJobs.Extensions.SqlServer
 ## Using the binding
 ### C#
 
+#### Configure the binding
 ```csharp
 [assembly: WebJobsStartup(typeof(CustomerSamples.Startup))]
 namespace CustomerSamples
@@ -30,12 +31,36 @@ namespace CustomerSamples
         public void Configure(IWebJobsBuilder builder)
         {
             builder.AddDapperSqlServer();
+            builder.AddServiceBus();
         }
     }
 }
 ```
 
-#### Output binding samples
+#### Input binding sample with ServiceBus
+
+##### select2.sql
+```sql
+UPDATE [Customers] SET Processed = @Processed where CustomerNumber in 
+       (select top 5 CustomerNumber from [Customers] 
+         WHERE Processed is null ORDER BY Updated ASC);
+SELECT CustomerNumber, FirstName, LastName FROM [Customers] WHERE Processed = @Processed;
+```
+
+```csharp
+[FunctionName("SelectCustomerSample5")]
+public static void SelectCustomerSample5 ([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer,
+                                    [Dapper(Sql = "select2.sql",
+                                            SqlConnection = "SqlConnection",
+                                            Parameters = "Processed:{datetime:yyyy-MM-dd HH:mm:ss}")] List<Customer> customers,
+                                    [ServiceBus("myqueue", Connection = "myconnection")] ICollector<Customer> outputSbQueue,
+                                    ILogger log)
+{
+    customers.ForEach(x=> outputSbQueue.Add(x));
+}
+```
+
+#### Output binding samples with Http trigger
 
 ```csharp 
 [FunctionName("InsertCustomerSample1")]

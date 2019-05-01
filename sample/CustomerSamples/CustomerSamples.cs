@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Data;
+using System;
+using System.Linq;
 
 namespace Samples
 {
@@ -87,6 +89,17 @@ namespace Samples
                                           ILogger log)
         {
             return customers;
+        }
+
+        [FunctionName("SelectCustomerSample5")]
+        public static void SelectCustomerSample5 ([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer,
+                                          [Dapper(Sql = "select2.sql",
+                                                  SqlConnection = "SqlConnection",
+                                                  Parameters = "Processed:{datetime:yyyy-MM-dd HH:mm:ss}")] List<Customer> customers,
+                                          [ServiceBus("myqueue", Connection = "ConnectionStrings:ServiceBusConnection")] ICollector<Customer> outputSbQueue,
+                                          ILogger log)
+        {
+            customers.ForEach(x=> outputSbQueue.Add(x));
         }
     }
 }
