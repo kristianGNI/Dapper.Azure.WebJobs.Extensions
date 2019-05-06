@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Data;
 using System.Linq;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,25 +23,10 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             DynamicParameters parameters;
             if (Utility.IsJson(attr.Parameters))
                 parameters = GetParametersFromJSON(attr.Parameters);
-            else if(Utility.IsParameterizeSql(sql))
-                parameters =  GetMatchedParametersFromString(attr.Parameters, sql);
             else
                 parameters = GetParametersFromString(attr.Parameters); 
-
-            return await GenericSqlStore.ExecuteQuery<T>(parameters, attr.SqlConnection, sql, attr.CommandTimeout, attr.IsolationLevel, attr.CommandType);
-        }
-        private DynamicParameters GetMatchedParametersFromString(string strParameters, string sql)
-        {
-            if (string.IsNullOrEmpty(strParameters)) return null;
-            
-            var sqlParameter = Utility.GetWords(sql);
-            var values = Utility.StringToDict(strParameters);
-            DynamicParameters parameters = new DynamicParameters();
-            for (int i = 0; i < sqlParameter.Count(); i++)
-            {
-                parameters.Add(sqlParameter[i], values[sqlParameter[i].Remove(0, 1)]);
-            }
-            return parameters;
+            var result = await GenericSqlStore.ExecuteQuery(parameters, attr.SqlConnection, sql, attr.CommandTimeout, attr.IsolationLevel, attr.CommandType);
+            return HandleQueryResult(result);
         }
         private DynamicParameters GetParametersFromString(string strParameters)
         {
@@ -63,6 +48,20 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             parameters.AddDynamicParams(objects);
             
             return parameters;
+        }
+        private static T HandleQueryResult(IEnumerable<dynamic> result)
+        {
+            T resultValue = default(T);
+            if (result != null && result.Count() > 0)
+            {
+                string json;
+                if (result.Count() > 1)
+                    json = JsonConvert.SerializeObject(result);
+                else
+                    json = JsonConvert.SerializeObject(result.FirstOrDefault());
+                resultValue = JsonConvert.DeserializeObject<T>(json);
+            }
+            return resultValue;
         }
      }
 }

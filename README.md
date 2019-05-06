@@ -1,5 +1,6 @@
 # Dapper.Azure.WebJobs.Extensions
 ##### Independent open source project by Kristian Gundry Nielsen
+##### Currently only working with MS SQL Server
 Extension for Azure functions input/output bindings to natively use Dapper sql calls.  
 [Azure Functions and Bindings Reference](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 

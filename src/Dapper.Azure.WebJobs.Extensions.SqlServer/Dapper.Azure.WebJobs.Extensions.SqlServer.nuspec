@@ -9,7 +9,7 @@
         <licenseUrl>https://github.com/kristianGNI/Dapper.Azure.WebJobs.Extensions/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/kristianGNI/Dapper.Azure.WebJobs.Extensions</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>SQL binding for azure functions using Dapper, currently only working with MS SQL Server</description>
+        <description>Independent open source project by Kristian Gundry Nielsen. SQL binding for azure functions using Dapper, currently only working with MS SQL Server</description>
         <copyright>Copyright (c) 2019 Kristian Gundry Nielsen</copyright>
         <tags>azure-function sql dapper azure</tags>    
         <summary>Dapper.Azure.WebJobs.Extensions is input and ouput binding for Azure functions</summary>

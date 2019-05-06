@@ -19,13 +19,6 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-            
-            var isParameterizeSql = Utility.IsParameterizeSql(sql);
-            if (isParameterizeSql)
-            {
-                if (parameters == null || parameters.Count() == 0)
-                    throw new System.ArgumentNullException(nameof(parameters), "The sql statement is parameterized therefore input can't be null or empty");
-            }
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -46,19 +39,12 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                 }
             }
         }
-        public static async Task<T> ExecuteQuery<T>(DynamicParameters parameters, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
+        public static async Task<IEnumerable<dynamic>> ExecuteQuery(DynamicParameters parameters, string connectionString, string sql, int? commandTimeout, IsolationLevel isolationLevel, 
                                                     CommandType commandType)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new System.ArgumentNullException(nameof(connectionString));
             if (string.IsNullOrEmpty(sql)) throw new System.ArgumentNullException(nameof(sql));
-
-            var isParameterizeSql = Utility.IsParameterizeSql(sql);
-            if (isParameterizeSql)
-            {
-                if (parameters == null)
-                    throw new System.ArgumentNullException(nameof(parameters), "The sql statement is parameterized therefore parameters can't be null or empty");
-            }
-
+            
             using (var connection = new SqlConnection(connectionString))
             {
                 IEnumerable<dynamic> result;
@@ -76,23 +62,10 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Dapper
                         throw ex;
                     }
                 }
-                return HandleQueryResult<T>(result);
+                return result;
             }
         }
         
-        private static T HandleQueryResult<T>(IEnumerable<dynamic> result)
-        {
-            T resultValue = default(T);
-            if (result != null && result.Count() > 0)
-            {
-                string json;
-                if (result.Count() > 1)
-                    json = JsonConvert.SerializeObject(result);
-                else
-                    json = JsonConvert.SerializeObject(result.FirstOrDefault());
-                resultValue = JsonConvert.DeserializeObject<T>(json);
-            }
-            return resultValue;
-        }
+        
     }
 }
