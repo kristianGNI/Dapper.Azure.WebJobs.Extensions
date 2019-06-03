@@ -55,7 +55,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
             if (result != null && result.Count() > 0)
             {
                 string json;
-                if (result.Count() > 1)
+                if(Utility.IsEnumerable(typeof(T)))
                     json = JsonConvert.SerializeObject(result);
                 else
                     json = JsonConvert.SerializeObject(result.FirstOrDefault());
