@@ -57,11 +57,12 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
 
             return word;
         }
-        public static string GetTextFromFile(string fileName)
+        public static string GetTextFromFile(string rootDir, string fileName)
         {
             if (string.IsNullOrEmpty(fileName)) throw new System.ArgumentNullException(nameof(fileName));
-
-            string path = Path.Combine(Environment.CurrentDirectory, fileName);
+            if (string.IsNullOrEmpty(rootDir)) throw new System.ArgumentNullException(nameof(rootDir));
+            
+            string path = Path.Combine(rootDir, fileName);
             return System.IO.File.ReadAllText(path);
         }
         public static Dictionary<string, string> StringToDict(string input)

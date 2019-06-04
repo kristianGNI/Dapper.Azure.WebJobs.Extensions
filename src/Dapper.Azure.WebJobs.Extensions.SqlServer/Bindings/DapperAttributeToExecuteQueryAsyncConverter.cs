@@ -12,13 +12,19 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
 {
     internal class DapperAttributeToExecuteQueryAsyncConverter<T> : IAsyncConverter<DapperAttribute, T>
     {
+        private string _path;
+        
+        public DapperAttributeToExecuteQueryAsyncConverter(string path)
+        {
+            _path = path;
+        }
         public async Task<T> ConvertAsync(DapperAttribute attr, CancellationToken cancellationToken)
         {
             if (attr == null) throw new System.ArgumentNullException(nameof(attr));
 
             string sql = attr.Sql;
             if (Utility.IsSqlScript(sql))
-                sql = Utility.GetTextFromFile(attr.Sql);
+                sql = Utility.GetTextFromFile(_path, attr.Sql);
 
             DynamicParameters parameters;
             if (Utility.IsJson(attr.Parameters))
