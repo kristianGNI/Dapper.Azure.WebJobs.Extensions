@@ -11,9 +11,11 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
     internal class ExecuteSqlAsyncCollector : IAsyncCollector<SqlInput>
     {
         private DapperAttribute _dapperAttribute;
-        public ExecuteSqlAsyncCollector(DapperAttribute attribute)
+        private string _path;
+        public ExecuteSqlAsyncCollector(DapperAttribute attribute, string path)
         {
             _dapperAttribute = attribute ?? throw new System.ArgumentNullException(nameof(attribute));
+            _path = path;
         }
         public async Task AddAsync(SqlInput input, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -21,7 +23,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Bindings
 
             string sql = _dapperAttribute.Sql;
             if (Utility.IsSqlScript(sql))
-                sql = Utility.GetTextFromFile(sql);
+                sql = Utility.GetTextFromFile(_path, sql);
             var parameters = GetParameters(input.Parameters);
             await GenericSqlStore.Execute(parameters , _dapperAttribute.SqlConnection, sql, _dapperAttribute.CommandTimeout, _dapperAttribute.IsolationLevel, _dapperAttribute.CommandType);
         }

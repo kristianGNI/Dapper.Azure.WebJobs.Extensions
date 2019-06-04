@@ -2,6 +2,7 @@
 using Microsoft.Azure.WebJobs.Description;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Config;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -13,6 +14,11 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Config
     [Extension("Dapper")]
     public class DapperExtensionConfigProvider : IExtensionConfigProvider
     {
+        private readonly string _appRoot;
+        public DapperExtensionConfigProvider(IOptions<ExecutionContextOptions> options)
+        {
+            _appRoot = options.Value.AppDirectory;           
+        }
         public void Initialize(ExtensionConfigContext context)
         {
             context.AddConverter<JObject, SqlInput>(input => {
@@ -25,8 +31,8 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer.Config
             context.AddOpenConverter<OpenType, SqlInput>(typeof(OpenTypeToSqlInputConverter<>));
 
             var rule = context.AddBindingRule<DapperAttribute>();
-            rule.BindToCollector<SqlInput>(attr => new ExecuteSqlAsyncCollector(attr));
-            rule.BindToInput<OpenType>(typeof(DapperAttributeToExecuteQueryAsyncConverter<>));
+            rule.BindToCollector<SqlInput>(attr => new ExecuteSqlAsyncCollector(attr,_appRoot));
+            rule.BindToInput<OpenType>(typeof(DapperAttributeToExecuteQueryAsyncConverter<>), _appRoot);
         }
         public SqlInput ConvertFromJArray(JArray arrary)
         {

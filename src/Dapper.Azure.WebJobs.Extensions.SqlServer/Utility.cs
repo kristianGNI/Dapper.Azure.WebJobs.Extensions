@@ -57,11 +57,12 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
 
             return word;
         }
-        public static string GetTextFromFile(string fileName)
+        public static string GetTextFromFile(string rootDir, string fileName)
         {
             if (string.IsNullOrEmpty(fileName)) throw new System.ArgumentNullException(nameof(fileName));
-
-            string path = Path.Combine(Environment.CurrentDirectory, fileName);
+            if (string.IsNullOrEmpty(rootDir)) throw new System.ArgumentNullException(nameof(rootDir));
+            
+            string path = Path.Combine(rootDir, fileName);
             return System.IO.File.ReadAllText(path);
         }
         public static Dictionary<string, string> StringToDict(string input)
@@ -73,8 +74,11 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
                     .Where(part => part.Length == 2)
                     .ToDictionary(sp => sp[0].Trim(), sp => sp[1].Trim());
         }
-        public static bool IsEnumerable(object type)
+        public static bool IsEnumerable(object obj)
         {
+            return obj is IEnumerable;
+        }
+        public static bool IsEnumerable(Type type){
             return type is IEnumerable;
         }
         public static bool IsParameterizeSql(string sql)
