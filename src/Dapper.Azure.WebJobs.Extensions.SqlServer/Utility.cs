@@ -79,7 +79,7 @@ namespace Dapper.Azure.WebJobs.Extensions.SqlServer
             return obj is IEnumerable;
         }
         public static bool IsEnumerable(Type type){
-            return type is IEnumerable;
+            return typeof(IEnumerable).IsAssignableFrom(type);
         }
         public static bool IsParameterizeSql(string sql)
         {
